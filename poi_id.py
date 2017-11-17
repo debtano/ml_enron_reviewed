@@ -11,12 +11,10 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC, SVC
 from sklearn.preprocessing import Imputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
-from sklearn.decomposition import PCA
-
 
 """
 	Section #1 
@@ -104,7 +102,7 @@ print "\n\n This is the list of features for the first train and validation: {}"
 ### Extract features and labels from dataset for local testing
 labels_series = my_dataset.loc[:, 'poi']
 labels = labels_series.values
-labels = labels.astype(np.int64)
+# labels = labels.astype(np.int64)
 
 ### Now the features, we should 'index' the slicing with a list of all the features BUT poi
 features_columns = []
@@ -113,14 +111,16 @@ for col in my_dataset.columns:
         features_columns.append(col)
 
 ### pandas 'as_matrix' helps convert pandas Series to ndarrays based on selected columns
-features = my_dataset.as_matrix(columns=features_columns)
+initial_features = my_dataset.as_matrix(columns=features_columns)
 
 ### Lets check the results. labels should be a 1D array and features a ND array 
-print "labels has this shape: {}".format(labels.shape)
-print "features has this shape: {}".format(features.shape)
+print "Feature selection - Lest check inital features list after cleaning"
+print "\n\nlabels has this shape: {}".format(labels.shape)
+print "features has this shape: {}".format(initial_features.shape)
+print "This is the list of initial featureas after cleaning: {}".format(features_columns) 
 
-### Lets build the model for feature exploration
-features_train, features_test, labels_train, labels_test = train_test_split(features, labels, stratify=labels, random_state=42)
+### Lets first split the set stratifying on labels 
+features_train, features_test, labels_train, labels_test = train_test_split(initial_features, labels, stratify=labels, random_state=42)
 
 ### Fit the model
 forest = RandomForestClassifier(n_estimators=100, random_state=0, max_depth=4)
@@ -129,47 +129,72 @@ forest.fit(features_train, labels_train)
 ### Obtain feature_importances
 feat_importance = forest.feature_importances_
 
-### Check which features provide to be th most important
+### Step 2.a - Check which features provide to be the most important
 my_dataset_no_poi = my_dataset.drop('poi', axis=1)
 feat_names = my_dataset_no_poi.columns.values
-test = pd.Series(feat_importance,index=feat_names)
-print test[test > 0.10]
+initial_feat_test = pd.Series(feat_importance,index=feat_names)
+print "\nThis is the ranking of the initial features"
+print initial_feat_test.sort_values(ascending=False)
 
-### Lets move to build a different feature list creating cash_from_stock and high_exercised_percentile
-### labels can be reused, features will be redefined
+### Lets move to build a different feature list creating cash_from_stock, high_exercised_percentile
+### and advanced_cash ; labels can be reused, features will be redefined
 ### Firts copy the dataset 
+
 my_magic_dataset = my_dataset
 
-### Create new feature 'cash_from_stock'
+"""
+	New Features to be implemented
+	1. exercised_stock_option = > as the sum of exercised_stock_options and restricted_stock
+	2. high_exercised_percentile => as a boolean mask of the .80 percentile of exercised_stock_options 
+	3. advanced_cash => as the sum of loan_advances , other and expenses
+
+"""
+
+### Create new feature #1  'cash_from_stock'
 my_magic_dataset['cash_from_stock'] = my_magic_dataset['exercised_stock_options'] + my_magic_dataset['restricted_stock']
 
-### Create new feature 'high_exercisd_percentile'
-
+### Create new feature #2  'high_exercisd_percentile'
 water_mark = my_magic_dataset['exercised_stock_options'].quantile(.80)
 my_magic_dataset['high_exercised_percentile'] = my_magic_dataset['exercised_stock_options'] > water_mark
 my_magic_dataset['high_exercised_percentile'] = my_magic_dataset['high_exercised_percentile'].astype(np.int64)
+
+### Create new feature #3 'advanced_cash'
+my_magic_dataset['advanced_cash'] = my_magic_dataset['loan_advances'] + my_magic_dataset['other'] + my_magic_dataset['expenses']
 
 ### Align features and labels with the new feature arrangement
 my_magic_dataset_no_poi = my_magic_dataset.drop('poi', axis=1)
 magic_feat = my_magic_dataset_no_poi.columns.values
 my_magic_features = my_magic_dataset_no_poi.as_matrix(columns=magic_feat)
 
-### Check if correct shapes
-print "labels has this shape: {}".format(labels.shape)
-print "features has this shape: {}".format(my_magic_features.shape)
+### Check if correct shapes and list of new features
 
+print "Feature selection - Lest check new features list after creation of 3 new features"
+print "\n\nlabels has this shape: {}".format(labels.shape)
+print "features has this shape: {}".format(my_magic_features.shape)
+print "This is the list of features including 3 new features: {}".format(magic_feat) 
+
+### Prepare train and test
 my_magic_features_train, my_magic_features_test, labels_train, labels_test = train_test_split(my_magic_features, labels, stratify=labels, random_state=42)
 
 ### Fit and obtain feature importance
 magic_forest = RandomForestClassifier(n_estimators=100, random_state=0, max_depth=4)
 magic_forest.fit(my_magic_features_train ,labels_train)
+
+### Obtain feature_importances
 magic_feat_importance = magic_forest.feature_importances_
 
-### Check which features provide to be th most important
-magic_feat_names = my_magic_dataset_no_poi.columns.values
-magic_test = pd.Series(magic_feat_importance,index=magic_feat_names)
-print magic_test[magic_test > 0.10]
+### Step 2.b - Check which features provide to be th most important
+magic_feat_test = pd.Series(magic_feat_importance,index=magic_feat)
+print "\nThis is the ranking of the new list of features including new ones"
+print magic_feat_test.sort_values(ascending=False)
 
+
+### Step 2.c - Given that PCA n_components=6 provided the best results i will compare the top 6 list of the initial
+### list against the top 6 of the new list 
+initial_top_six = ['poi','exercised_stock_options', 'total_stock_value', 'restricted_stock', 'other', 'deferred_income', 'expenses']
+magic_top_six = ['poi','cash_from_stock', 'exercised_stock_options', 'total_stock_value', 'deferred_income', 'bonus', 'restricted_stock']
+
+#print "\nAccuracy score for initial features - 5 top features: {}".format(accuracy_score(labels_test, mg_pred))
 """
 	Section #3
 
@@ -179,31 +204,29 @@ print magic_test[magic_test > 0.10]
 	Then , build the pipe, the GridSearchCV for the LinearSVC
 	First i will train and evaluate a RandomForestClassifier with the features i end up
 	I will use StratifiedShuffleSplit 
-	
-"""
-my_features_list = ['poi']
-for feat in magic_feat:
-	my_features_list.append(feat)
-# print my_features_list
+"""	
+
+### Firs copy the dataset
 my_dataset = my_magic_dataset.to_dict(orient='index')
-# print my_dataset
-# my_features_list = ['poi','cash_from_stock', 'other', 'deferred_income']
+
+### Here we have to select manually between the initial list of top six features (initial_top_six) or the new one (magic_top_six)
+my_features_list = magic_top_six
+print "My features list in this test: {}".format(my_features_list)
 data = featureFormat(my_dataset, my_features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
 ### Build the param grid for the gridsearch
-lsvc_param_grid = {'linearsvc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'linearsvc__tol': [1e-3, 1e-4], 'pca__tol': [0.001,0.01,0.1,1,10,100]}
+lsvc_param_grid = {'linearsvc__C': [0.001, 0.01, 0.1, 1, 10, 100], 'linearsvc__tol': [1e-3, 1e-4]} 
 
 ### Lets build our StratifiedShuffleSplit for the dataset
 from sklearn.model_selection import StratifiedShuffleSplit
 lsvc_cv = StratifiedShuffleSplit(n_splits=100, test_size=0.5, random_state=42)
 
 ### Build the pipe
-
-pipe = make_pipeline(PCA(n_components=6, svd_solver='arpack', random_state=42),
-					 Imputer(missing_values=0, strategy='mean'),
-					 StandardScaler(),
-					 LinearSVC(penalty='l2', class_weight='balanced', dual=False))
+imputer = Imputer(missing_values=0, strategy='mean')
+scaler = StandardScaler()
+clf = LinearSVC(penalty='l2', class_weight='balanced', dual=False)
+pipe = make_pipeline(imputer, scaler, clf)
 
 ### Build the GridSearchCV
 pipe_grid = GridSearchCV(pipe, param_grid=lsvc_param_grid, cv=lsvc_cv)
