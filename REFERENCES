@@ -1,0 +1,21 @@
+REFERENCES
+
+https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.from_dict.html
+http://python-reference.readthedocs.io/en/latest/docs/dict/itervalues.html
+Python for Data Analysis, Data Wrangling with Pandas, NumPy, and IPython – Wes McKinney
+Hands-On Machine Learning with Scikit-Learn and TensorFlow, Concepts, Tools, and Techniques to Build Intelligent Systems – Aurélien Géron
+http://www.investopedia.com/terms/r/restrictedstock.asp
+Introduction to Machine Learning with Python, A Guide for Data Scientists – Andreas C. Müller, Sarah Guido
+https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_dict.html
+https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.as_matrix.html
+http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html
+http://scikit-learn.org/stable/auto_examples/ensemble/plot_voting_decision_regions.html#sphx-glr-auto-examples-ensemble-plot-voting-decision-regions-py
+http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html
+http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
+http://scikit-learn.org/stable/auto_examples/plot_missing_values.html#sphx-glr-auto-examples-plot-missing-values-py
+http://scikit-learn.org/stable/auto_examples/svm/plot_svm_scale_c.html#sphx-glr-auto-examples-svm-plot-svm-scale-c-py
+http://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html#sphx-glr-auto-examples-classification-plot-classifier-comparison-py
+http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
+http://scikit-learn.org/stable/modules/svm.html#svm-classification
+http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html
+
