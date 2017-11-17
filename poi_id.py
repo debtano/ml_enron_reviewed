@@ -210,8 +210,10 @@ magic_top_six = ['poi','cash_from_stock', 'exercised_stock_options', 'total_stoc
 my_dataset = my_magic_dataset.to_dict(orient='index')
 
 ### Here we have to select manually between the initial list of top six features (initial_top_six) or the new one (magic_top_six)
+### Set my_features_list to initial_top_six | magic_top_six
 my_features_list = magic_top_six
 print "My features list in this test: {}".format(my_features_list)
+
 data = featureFormat(my_dataset, my_features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 

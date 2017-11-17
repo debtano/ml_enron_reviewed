@@ -18,4 +18,6 @@ http://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comp
 http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
 http://scikit-learn.org/stable/modules/svm.html#svm-classification
 http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html
-
+http://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html#sklearn.metrics.classification_report
+http://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.f_classif.html#sklearn.feature_selection.f_classif
+http://scikit-learn.org/stable/auto_examples/feature_selection/plot_feature_selection_pipeline.html#sphx-glr-auto-examples-feature-selection-plot-feature-selection-pipeline-py
