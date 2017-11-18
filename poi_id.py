@@ -129,7 +129,7 @@ forest.fit(features_train, labels_train)
 ### Obtain feature_importances
 feat_importance = forest.feature_importances_
 
-### Step 2.a - Check which features provide to be the most important
+### Check which features provide to be the most important
 my_dataset_no_poi = my_dataset.drop('poi', axis=1)
 feat_names = my_dataset_no_poi.columns.values
 initial_feat_test = pd.Series(feat_importance,index=feat_names)
@@ -183,13 +183,13 @@ magic_forest.fit(my_magic_features_train ,labels_train)
 ### Obtain feature_importances
 magic_feat_importance = magic_forest.feature_importances_
 
-### Step 2.b - Check which features provide to be th most important
+### Check which features provide to be th most important
 magic_feat_test = pd.Series(magic_feat_importance,index=magic_feat)
 print "\nThis is the ranking of the new list of features including new ones"
 print magic_feat_test.sort_values(ascending=False)
 
 
-### Step 2.c - Given that PCA n_components=6 provided the best results i will compare the top 6 list of the initial
+### Given that PCA n_components=6 provided the best results i will compare the top 6 list of the initial
 ### list against the top 6 of the new list 
 initial_top_six = ['poi','exercised_stock_options', 'total_stock_value', 'restricted_stock', 'other', 'deferred_income', 'expenses']
 magic_top_six = ['poi','cash_from_stock', 'exercised_stock_options', 'total_stock_value', 'deferred_income', 'bonus', 'restricted_stock']

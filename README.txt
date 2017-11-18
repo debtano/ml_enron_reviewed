@@ -10,7 +10,7 @@ poi_id.py                           Script to load, preprocess, engineer and mod
                                     Section # 2 - Feature selection and engineering
                                     Section # 3 -  Model, params tuning , pipe and dump
                                     All referenced in the "Document the work" document
-document_the_work.docx              Main document explaining the work 
+project_report.docx                 Main document explaining the work 
 tester.py                           Tester script used to validate chosen model
 REFERENCES 						    References used during the project
 feature_format.py                   Utility library
